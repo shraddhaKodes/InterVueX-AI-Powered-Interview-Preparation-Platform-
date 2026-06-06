@@ -1,0 +1,16 @@
+export const languageMap = {
+  javascript: "typescript-deno",
+  typescript: "typescript-deno",
+  python: "python-3.14",
+  java: "openjdk-25",
+  cpp: "g++-15",
+  c: "gcc-15",
+  csharp: "dotnet-csharp-9",
+  go: "go-1.26",
+  rust: "rust-1.93",
+  php: "php-8.5",
+  ruby: "ruby-4.0",
+  swift: "swift-6.0",
+  kotlin: "kotlin-1.9",
+  other: "python-3.14",
+};
