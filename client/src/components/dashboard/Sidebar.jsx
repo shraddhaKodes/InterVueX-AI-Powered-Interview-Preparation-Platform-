@@ -14,15 +14,11 @@ import {
 } from "lucide-react";
 import { ThemeContext } from "../../context/ThemeContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useDashboardStore } from "../../store/dashboardStore.js";
 
 const navItemsBase = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { label: "AI Interviews", path: "/dashboard/ai-interviews", icon: Activity },
-  {
-    label: "Mock Interviews",
-    path: "/dashboard/mock-interviews",
-    icon: TerminalSquare,
-  },
   { label: "Resume Analyzer", path: "/dashboard/resume", icon: FileCheck2 },
   { label: "Coding Arena", path: "/dashboard/coding", icon: Cpu },
   { label: "Submissions", path: "/dashboard/coding/history", icon: FileCheck2 },
@@ -35,17 +31,21 @@ const navItems = (user) => {
   const base = [...navItemsBase];
   if (user?.role === "admin") {
     base.splice(5, 0, {
-      label: "Manage Problems",
+      label: "Manage User",
       path: "/dashboard/coding/admin",
       icon: FileCheck2,
     });
   }
+
   return base;
 };
 
 const Sidebar = () => {
   const { darkMode } = useContext(ThemeContext);
   const { user } = useAuth();
+  const { overview } = useDashboardStore();
+
+  const creditsRemaining = overview?.userSummary?.creditsRemaining ?? 0;
 
   const asideClass = darkMode
     ? "hidden lg:flex lg:min-h-screen lg:w-72 lg:flex-col lg:gap-8 lg:border-r lg:border-white/10 lg:bg-slate-950/75 lg:px-6 lg:py-8 lg:text-slate-100 lg:backdrop-blur-xl"
@@ -72,7 +72,7 @@ const Sidebar = () => {
         className={asideClass}
       >
         <div className="space-y-6">
-          <div className={brandCardClass}>
+          <NavLink to="/" className={brandCardClass}>
             <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-cyan-400 text-white shadow-lg shadow-blue-950/30">
               <Sparkles size={24} />
             </div>
@@ -92,7 +92,7 @@ const Sidebar = () => {
                 AI Command Center
               </p>
             </div>
-          </div>
+          </NavLink>
 
           <nav className="space-y-1">
             {navItems(user).map((item) => {
@@ -144,8 +144,9 @@ const Sidebar = () => {
               darkMode ? "text-white" : "text-slate-950"
             }`}
           >
-            24
+            {creditsRemaining}
           </p>
+
           <p
             className={`mt-1 text-sm ${
               darkMode ? "text-slate-400" : "text-slate-600"
@@ -161,17 +162,20 @@ const Sidebar = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className={mobileNavClass}
+        onClick={(e) => {
+          // Prevent any unexpected parent click handlers from navigating.
+          e.stopPropagation();
+        }}
       >
-        {navItems(user)
-          .slice(0, 5)
-          .map((item) => {
+        <div className="flex items-center justify-center gap-3 overflow-x-auto no-scrollbar w-full">
+          {navItems(user).map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `grid h-12 w-12 place-items-center rounded-2xl transition ${
+                  `grid h-12 w-12 place-items-center rounded-2xl shrink-0 transition ${
                     isActive
                       ? darkMode
                         ? "bg-gradient-to-br from-blue-500/25 to-violet-500/25 text-white"
@@ -186,6 +190,7 @@ const Sidebar = () => {
               </NavLink>
             );
           })}
+        </div>
       </motion.div>
     </>
   );

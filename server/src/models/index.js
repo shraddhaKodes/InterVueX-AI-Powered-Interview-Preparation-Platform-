@@ -1,9 +1,9 @@
 export { User } from "./UserSchema.js";
 export { Interview } from "./InterviewSchema.js";
-export { MockInterview } from "./MockInterviewSchema.js";
 export { ResumeAnalysis } from "./ResumeAnalysisSchema.js";
 export { CodingSubmission } from "./CodingSubmissionSchema.js";
 export { Problem } from "./ProblemSchema.js";
 export { Analytics } from "./AnalyticsSchema.js";
 export { Payment } from "./PaymentSchema.js";
 export { CreditUsage } from "./CreditUsageSchema.js";
+export { Notification } from "./NotificationSchema.js";

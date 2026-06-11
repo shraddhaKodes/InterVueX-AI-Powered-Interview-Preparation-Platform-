@@ -43,8 +43,8 @@ const SignUp = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     const formDataToSend = new FormData();
+    console.log(formDataToSend) ;
     for (const key in formData) {
       formDataToSend.append(key, formData[key]);
     }

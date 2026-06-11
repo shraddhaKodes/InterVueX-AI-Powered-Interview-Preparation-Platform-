@@ -8,7 +8,6 @@ import {
 
 export const createProblem = catchAsyncErrors(async (req, res, next) => {
   const { title, slug, difficulty, description } = req.body;
-  console.log(req.body);
   if (!title || !slug || !difficulty || !description) {
     return next(new ErrorHandler("Missing required fields", 400));
   }

@@ -1,6 +1,13 @@
 import { Problem } from "../models/ProblemSchema.js";
 import ErrorHandler from "../middlewares/error.js";
 
+import { createNotificationForUser } from "./notificationService.js";
+
+const getNonAdminUsers = async () => {
+  const { User } = await import("../models/UserSchema.js");
+  return User.find({ role: { $ne: "admin" } }).select("_id");
+};
+
 export const createProblemService = async ({ payload, userId }) => {
   const { title, slug, difficulty, description } = payload;
 
@@ -23,6 +30,29 @@ export const createProblemService = async ({ payload, userId }) => {
     tags: payload.tags || [],
     createdBy: userId,
   });
+
+  // Persist a notification for future users.
+  // Target audience: all non-admin users.
+  try {
+    const targetUsers = await (
+      await import("../models/UserSchema.js")
+    ).User.find({ role: { $ne: "admin" } }).select("_id");
+    await Promise.all(
+      targetUsers.map((u) =>
+        createNotificationForUser({
+          userId: u._id,
+          type: "problem",
+          title: "New coding problem added",
+          body: `A new problem "${problem.title}" is available.`,
+          href: `/dashboard/coding/${problem.slug}`,
+          source: "coding-arena",
+          meta: { problemId: problem._id, slug: problem.slug },
+        }),
+      ),
+    );
+  } catch {
+    // ignore notification failures
+  }
 
   return problem;
 };
@@ -50,6 +80,31 @@ export const updateProblemService = async ({ id, payload, userId }) => {
   problem.tags = payload.tags || [];
 
   await problem.save();
+
+  // Persist a notification for future users.
+  // Target audience: all non-admin users.
+  try {
+    const targetUsers = await (
+      await import("../models/UserSchema.js")
+    ).User.find({ role: { $ne: "admin" } }).select("_id");
+
+    await Promise.all(
+      targetUsers.map((u) =>
+        createNotificationForUser({
+          userId: u._id,
+          type: "problem",
+          title: "Coding problem updated",
+          body: `Problem "${problem.title}" has been updated.`,
+          href: `/dashboard/coding/${problem.slug}`,
+          source: "coding-arena",
+          meta: { problemId: problem._id, slug: problem.slug },
+        }),
+      ),
+    );
+  } catch {
+    // ignore notification failures
+  }
+
   return problem;
 };
 

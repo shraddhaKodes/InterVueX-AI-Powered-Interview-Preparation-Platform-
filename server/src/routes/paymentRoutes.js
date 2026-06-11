@@ -1,50 +1,23 @@
 import express from "express";
 import {
-  createPayment,
-  getPaymentHistory,
+  createOrder,
   verifyPayment,
+  getPaymentHistory,
 } from "../controllers/paymentController.js";
+
 import { isAuthenticated } from "../middlewares/auth.js";
-import {
-  validateBodyObjectId,
-  validateObjectId,
-  validatePagination,
-  validateRequiredFields,
-} from "../middlewares/validation.js";
 
 const router = express.Router();
 
 router.use(isAuthenticated);
 
-/**
- * @route POST /api/payments/create
- * @desc Create a payment record for authenticated user
- * @access Private
- */
-router.post("/create", validateRequiredFields("paymentId", "amount"), createPayment);
+// Create Razorpay order
+router.post("/create-order", createOrder);
 
-/**
- * @route POST /api/payments/verify
- * @desc Verify a payment record by MongoDB id from request body
- * @access Private
- */
-router.post("/verify", validateRequiredFields("id"), validateBodyObjectId("id"), verifyPayment);
+// Verify Razorpay payment
+router.post("/verify-payment", verifyPayment);
 
-/**
- * @route GET /api/payments/history
- * @desc Get paginated payment history for authenticated user
- * @access Private
- */
-router.get("/history", validatePagination, getPaymentHistory);
-
-router
-  .route("/")
-  .post(validateRequiredFields("paymentId", "amount"), createPayment)
-  .get(validatePagination, getPaymentHistory);
-
-router
-  .route("/:id/verify")
-  .post(validateObjectId(), verifyPayment)
-  .put(validateObjectId(), verifyPayment);
+// Payment history
+router.get("/history", getPaymentHistory);
 
 export default router;

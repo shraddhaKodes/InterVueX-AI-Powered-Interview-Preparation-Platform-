@@ -8,6 +8,8 @@ import {
   submitInterviewAnswerService,
   updateInterviewService,
 } from "../services/interviewService.js";
+import { consumeCreditsService } from "../services/creditUsageService.js";
+import { FEATURE_CREDITS } from "../config/featureCredits.js";
 
 export const createInterview = catchAsyncErrors(async (req, res) => {
   const interview = await createInterviewService(req.user.id, req.body);
@@ -40,7 +42,11 @@ export const getInterviewById = catchAsyncErrors(async (req, res) => {
 });
 
 export const updateInterview = catchAsyncErrors(async (req, res) => {
-  const interview = await updateInterviewService(req.user.id, req.params.id, req.body);
+  const interview = await updateInterviewService(
+    req.user.id,
+    req.params.id,
+    req.body,
+  );
 
   res.status(200).json({
     success: true,
@@ -59,7 +65,17 @@ export const deleteInterview = catchAsyncErrors(async (req, res) => {
 });
 
 export const generateInterviewQuestions = catchAsyncErrors(async (req, res) => {
-  const interview = await generateInterviewQuestionsService(req.user.id, req.params.id);
+  const creditsToConsume = FEATURE_CREDITS["Generate Interview Questions"];
+
+  await consumeCreditsService(req.user.id, {
+    featureUsed: "ai-interview",
+    creditsConsumed: creditsToConsume,
+  });
+
+  const interview = await generateInterviewQuestionsService(
+    req.user.id,
+    req.params.id,
+  );
 
   res.status(200).json({
     success: true,
@@ -78,7 +94,33 @@ export const generateInterviewQuestions = catchAsyncErrors(async (req, res) => {
 });
 
 export const submitInterviewAnswer = catchAsyncErrors(async (req, res) => {
-  const result = await submitInterviewAnswerService(req.user.id, req.params.id, req.body);
+  const creditsToConsume =
+    FEATURE_CREDITS["Submit Interview for AI Evaluation"];
+
+  await consumeCreditsService(req.user.id, {
+    featureUsed: "mock-interview",
+    creditsConsumed: creditsToConsume,
+  });
+
+  const result = await submitInterviewAnswerService(
+    req.user.id,
+    req.params.id,
+    req.body,
+  );
+
+  // Socket.IO notification (so Topbar.jsx can show it)
+  const io = globalThis.__io;
+  if (io) {
+    io.to(String(req.user.id)).emit("notifications:new", {
+      id: String(result?.interview?._id || Date.now()),
+      title: "Interview completed",
+      body: "Your AI interview evaluation is ready.",
+      type: "interview",
+      read: false,
+      createdAt: new Date().toISOString(),
+      href: "/dashboard/interviews",
+    });
+  }
 
   res.status(200).json({
     success: true,

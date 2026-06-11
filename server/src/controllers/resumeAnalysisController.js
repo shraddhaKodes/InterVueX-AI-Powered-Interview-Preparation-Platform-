@@ -7,6 +7,8 @@ import {
   analyzeResumeWithAIAndSave,
 } from "../services/resumeAnalysisService.js";
 import { uploadPdfToCloudinaryAndExtractText } from "../services/resumeAnalysisUploadService.js";
+import { consumeCreditsService } from "../services/creditUsageService.js";
+import { FEATURE_CREDITS } from "../config/featureCredits.js";
 
 export const uploadResumeAnalysis = catchAsyncErrors(async (req, res) => {
   const resumeAnalysis = await uploadResumeAnalysisService(
@@ -28,6 +30,13 @@ export const analyzeResume = catchAsyncErrors(async (req, res) => {
       message: "resume file is required",
     });
   }
+
+  const creditsToConsume = FEATURE_CREDITS["Resume Upload + Analysis"];
+  await consumeCreditsService(req.user.id, {
+    featureUsed: "resume-analysis",
+    creditsConsumed: creditsToConsume,
+  });
+
   console.log("Received file:", req.file.originalname, "size:", req.file.size);
   const { resumeUrl, resumeText } = await uploadPdfToCloudinaryAndExtractText(
     req.file,
@@ -37,6 +46,22 @@ export const analyzeResume = catchAsyncErrors(async (req, res) => {
     resumeUrl,
     resumeText,
   });
+
+  // Socket.IO notification
+  const io = globalThis.__io;
+  if (io) {
+    io.to(String(req.user.id)).emit("notifications:new", {
+      id: String(resumeAnalysis?._id || Date.now()),
+      title: "Resume analysis finished",
+      body: resumeAnalysis?.ATSScore
+        ? `ATS Score: ${resumeAnalysis.ATSScore}`
+        : "Your resume analysis is ready.",
+      type: "resume-analysis",
+      read: false,
+      createdAt: new Date().toISOString(),
+      href: "/dashboard/resume-analyzer",
+    });
+  }
 
   res.status(201).json({
     success: true,

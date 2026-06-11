@@ -8,16 +8,21 @@ import { fileURLToPath } from "url";
 import connectDB from "./src/config/db.js";
 
 import authRoutes from "./src/routes/authRoutes.js";
+import notificationRoutes from "./src/routes/notificationRoutes.js";
+
 import userRoutes from "./src/routes/userRoutes.js";
+import adminUserRoutes from "./src/routes/adminUserRoutes.js";
 import dashboardRoutes from "./src/routes/dashboardRoutes.js";
 import interviewRoutes from "./src/routes/interviewRoutes.js";
-import mockInterviewRoutes from "./src/routes/mockInterviewRoutes.js";
 import resumeAnalysisRoutes from "./src/routes/resumeAnalysisRoutes.js";
 import codingSubmissionRoutes from "./src/routes/codingSubmissionRoutes.js";
 import codingArenaRoutes from "./src/routes/codingArenaRoutes.js";
 import analyticsRoutes from "./src/routes/analyticsRoutes.js";
 import paymentRoutes from "./src/routes/paymentRoutes.js";
 import creditUsageRoutes from "./src/routes/creditUsageRoutes.js";
+import adminPaymentRoutes from "./src/routes/adminPaymentRoutes.js";
+import adminCodingSubmissionsRoutes from "./src/routes/adminCodingSubmissionsRoutes.js";
+import messageRouter from "./src/routes/messageRouter.js";
 
 import { errorMiddleware } from "./src/middlewares/error.js";
 import { validateOnlineCompilerConfig } from "./src/config/onlineCompiler.js";
@@ -36,9 +41,7 @@ dotenv.config({
 validateOnlineCompilerConfig();
 
 const allowedOrigins = [
-  process.env.CLIENT_URL,
-  process.env.PORTFOLIO_URL,
-  process.env.DASHBOARD_URL,
+  process.env.CLIENT_URL
 ].filter(Boolean);
 
 const isLocalOrigin = (origin) =>
@@ -68,12 +71,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // NOTE: express-fileupload can conflict with multipart handling (e.g., multer).
 // This app relies on multer for resume uploads; keep express-fileupload for legacy endpoints only if needed.
-// app.use(
-//   fileUpload({
-//     useTempFiles: true,
-//     tempFileDir: "./tmp/",
-//   }),
-// );
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "./tmp/",
+  }),
+);
 
 // TEST ROUTE
 app.get("/", (req, res) => {
@@ -86,23 +89,22 @@ app.get("/", (req, res) => {
 // ROUTES
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/user", adminUserRoutes);
+
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/interviews", interviewRoutes);
-app.use("/api/v1/mock-interviews", mockInterviewRoutes);
 app.use("/api/v1/resume-analysis", resumeAnalysisRoutes);
 app.use("/api/v1/coding-submissions", codingSubmissionRoutes);
 app.use("/api/v1/coding-arena", codingArenaRoutes);
 app.use("/api/v1/analytics", analyticsRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/credit-usage", creditUsageRoutes);
+app.use("/api/v1/payments", adminPaymentRoutes);
+app.use("/api/v1/coding-arena", adminCodingSubmissionsRoutes);
+app.use("/api/v1/message", messageRouter);
 
-app.use("/api/auth", authRoutes);
-app.use("/api/interviews", interviewRoutes);
-app.use("/api/mock-interviews", mockInterviewRoutes);
-app.use("/api/resume-analysis", resumeAnalysisRoutes);
-app.use("/api/analytics", analyticsRoutes);
-app.use("/api/payments", paymentRoutes);
-app.use("/api/credit-usage", creditUsageRoutes);
+// Notifications (persisted + socket-backed)
+app.use("/api/v1/notifications", notificationRoutes);
 
 app.use(errorMiddleware);
 

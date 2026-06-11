@@ -11,6 +11,8 @@ import LoadingInterviewSkeleton from "../../components/interviews/LoadingIntervi
 import QuestionCard from "../../components/interviews/QuestionCard.jsx";
 import QuestionNavigator from "../../components/interviews/QuestionNavigator.jsx";
 import { useInterviewStore } from "../../store/interviewStore.js";
+import { consumeCredits } from "../../api/creditUsageApi.js";
+
 const buildDrafts = (interview) => {
   return (interview?.answers || []).reduce((accumulator, answer) => {
     accumulator[answer.questionIndex] = answer.answer || "";
@@ -61,6 +63,12 @@ const InterviewSession = () => {
 
   const handleGenerate = async () => {
     try {
+      // Credit monetization: charge for AI question generation
+      await consumeCredits({
+        featureUsed: "ai-interview",
+        creditsConsumed: 1,
+      });
+
       const interview = await generateQuestions(id);
       setDrafts(buildDrafts(interview));
     } catch {

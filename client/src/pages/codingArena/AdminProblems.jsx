@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ProblemTable from "../../components/codingArena/admin/ProblemTable.jsx";
 import ProblemForm from "../../components/codingArena/admin/ProblemForm.jsx";
 import DeleteProblemModal from "../../components/codingArena/admin/DeleteProblemModal.jsx";
+import AdminCodingTabs from "../../components/codingArena/admin/AdminCodingTabs.jsx";
 
 const AdminProblems = () => {
   const { problems, fetchProblems } = useProblemAdminStore();
@@ -28,8 +29,11 @@ const AdminProblems = () => {
   return (
     <div className="space-y-6 p-6">
       <div className="dashboard-heading flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Manage Problems</h2>
+        <h2 className="text-2xl font-semibold">Manage Coding (Admin)</h2>
       </div>
+
+      {/* Tabs */}
+      <AdminCodingTabs />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="col-span-1 lg:col-span-1">

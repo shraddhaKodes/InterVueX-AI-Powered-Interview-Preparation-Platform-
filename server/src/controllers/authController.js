@@ -19,7 +19,7 @@ import fs from "fs";
 // REGISTER
 export const register = catchAsyncErrors(async (req, res, next) => {
   const { fullName, username, email, password } = req.body || {};
-
+  console.log(req.body) ;
   if (!fullName || !email || !password) {
     return next(new ErrorHandler("Please fill all required fields", 400));
   }
@@ -81,15 +81,18 @@ export const register = catchAsyncErrors(async (req, res, next) => {
   }
 
   // CREATE USER
+  // Initial signup credits (fixed onboarding bonus)
   const user = await User.create({
     fullName,
     username,
     email,
     password,
     avatar: avatarData,
+    credits: 50,
   });
 
   // SEND WELCOME EMAIL
+
   await sendEmail(
     email,
     "Welcome to InterVueX 🚀",
@@ -195,7 +198,6 @@ export const register = catchAsyncErrors(async (req, res, next) => {
 // LOGIN
 export const login = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body || {};
-
   if (!email || !password) {
     return next(new ErrorHandler("Provide Email And Password!", 400));
   }

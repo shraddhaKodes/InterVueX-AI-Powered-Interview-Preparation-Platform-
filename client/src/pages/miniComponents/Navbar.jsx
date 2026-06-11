@@ -22,7 +22,7 @@ const Navbar = () => {
     setMenuOpen(false);
     navigate("/");
   };
-
+  console.log("Navbar Rendered - User:", user);
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "auto";
   }, [menuOpen]);
@@ -45,29 +45,37 @@ const Navbar = () => {
             <span>InterVueX</span>
           </Link>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <ul className="flex gap-8 font-bold text-sm uppercase tracking-widest">
               <li>
-                <a
-                  href="#home"
-                  className="hover:text-cyan-500 transition-colors"
-                >
+                <a href="#home" className="hover:text-cyan-500 transition-colors">
                   Home
                 </a>
               </li>
               <li>
-                <a
-                  href="#about"
-                  className="hover:text-cyan-500 transition-colors"
-                >
+                <a href="#features" className="hover:text-cyan-500 transition-colors">
                   Features
                 </a>
               </li>
               <li>
-                <a
-                  href="#contact"
-                  className="hover:text-cyan-500 transition-colors"
-                >
+                <a href="#dashboard" className="hover:text-cyan-500 transition-colors">
+                  Dashboard
+                </a>
+              </li>
+              {/* Conditionally render Admin option if user is an admin */}
+              {user?.role === "admin" && (
+                <li>
+                  <button
+                    onClick={() => navigate("/dashboard/coding/admin")}
+                    className="hover:text-cyan-500 transition-colors uppercase font-bold text-sm tracking-widest"
+                  >
+                    Admin
+                  </button>
+                </li>
+              )}
+              <li>
+                <a href="#contact" className="hover:text-cyan-500 transition-colors">
                   Contact
                 </a>
               </li>
@@ -112,6 +120,7 @@ const Navbar = () => {
         </div>
       </nav>
 
+      {/* Drawer Overlay */}
       <div
         className={`fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
           menuOpen ? "opacity-100 visible" : "opacity-0 invisible"
@@ -119,6 +128,7 @@ const Navbar = () => {
         onClick={() => setMenuOpen(false)}
       ></div>
 
+      {/* Mobile Drawer Menu */}
       <div
         className={`fixed top-0 right-0 w-[300px] h-full z-[120] shadow-2xl transform transition-transform duration-300 ease-out md:hidden ${
           menuOpen ? "translate-x-0" : "translate-x-full"
@@ -138,32 +148,40 @@ const Navbar = () => {
 
         <ul className="flex flex-col p-8 gap-6 text-lg font-bold">
           <li>
-            <a
-              href="#home"
-              onClick={() => setMenuOpen(false)}
-              className="hover:text-cyan-500"
-            >
+            <a href="#home" onClick={() => setMenuOpen(false)} className="hover:text-cyan-500">
               Home
             </a>
           </li>
           <li>
-            <a
-              href="#about"
-              onClick={() => setMenuOpen(false)}
-              className="hover:text-cyan-500"
-            >
+            <a href="#features" onClick={() => setMenuOpen(false)} className="hover:text-cyan-500">
               Features
             </a>
           </li>
           <li>
-            <a
-              href="#contact"
-              onClick={() => setMenuOpen(false)}
-              className="hover:text-cyan-500"
-            >
+            <a href="#dashboard" onClick={() => setMenuOpen(false)} className="hover:text-cyan-500">
+              Dashboard
+            </a>
+          </li>
+          {/* Mobile Admin Option */}
+          {user?.role === "admin" && (
+            <li>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/dashboard/coding/admin");
+                }}
+                className="hover:text-cyan-500 font-bold text-left block w-full"
+              >
+                Admin
+              </button>
+            </li>
+          )}
+          <li>
+            <a href="#contact" onClick={() => setMenuOpen(false)} className="hover:text-cyan-500">
               Contact
             </a>
           </li>
+
           {isAuthenticated ? (
             <li>
               <button

@@ -124,9 +124,15 @@ const ProblemForm = ({ problem, onDone }) => {
           onChange={(e) => setField("difficulty", e.target.value)}
           className="mt-1 block w-full rounded-md border px-3 py-2 bg-transparent"
         >
-          <option value="easy">Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
+          <option className={`space-y-4 ${panelClass}`} value="easy">
+            Easy
+          </option>
+          <option className={`space-y-4 ${panelClass}`} value="medium">
+            Medium
+          </option>
+          <option className={`space-y-4 ${panelClass}`} value="hard">
+            Hard
+          </option>
         </select>
       </div>
 
@@ -219,25 +225,41 @@ const ProblemForm = ({ problem, onDone }) => {
 
       <div>
         <label className="block text-sm font-medium">Visible Test Cases</label>
+
         {(form.visibleTestCases || []).map((tc, i) => (
-          <div key={i} className="grid grid-cols-2 gap-2 mt-2">
-            <input
-              value={tc.input}
-              placeholder="Input"
-              onChange={(e) =>
-                updateTestCase("visibleTestCases", i, "input", e.target.value)
-              }
-              className="rounded-md border px-3 py-2"
-            />
-            <input
-              value={tc.output}
-              placeholder="Output"
-              onChange={(e) =>
-                updateTestCase("visibleTestCases", i, "output", e.target.value)
-              }
-              className="rounded-md border px-3 py-2"
-            />
-            <div className="col-span-2 flex justify-end">
+          <div key={i} className="space-y-2 mt-4 border rounded-md p-3">
+            <div>
+              <label className="text-xs font-medium">Input</label>
+              <textarea
+                rows={4}
+                value={tc.input}
+                placeholder="Input"
+                onChange={(e) =>
+                  updateTestCase("visibleTestCases", i, "input", e.target.value)
+                }
+                className="w-full rounded-md border px-3 py-2 font-mono resize-y"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium">Output</label>
+              <textarea
+                rows={2}
+                value={tc.output}
+                placeholder="Output"
+                onChange={(e) =>
+                  updateTestCase(
+                    "visibleTestCases",
+                    i,
+                    "output",
+                    e.target.value,
+                  )
+                }
+                className="w-full rounded-md border px-3 py-2 font-mono resize-y"
+              />
+            </div>
+
+            <div className="flex justify-end">
               <button
                 type="button"
                 onClick={() => removeTestCase("visibleTestCases", i)}
@@ -248,6 +270,7 @@ const ProblemForm = ({ problem, onDone }) => {
             </div>
           </div>
         ))}
+
         <button
           type="button"
           onClick={() => addTestCase("visibleTestCases")}
@@ -259,25 +282,36 @@ const ProblemForm = ({ problem, onDone }) => {
 
       <div>
         <label className="block text-sm font-medium">Hidden Test Cases</label>
+
         {(form.hiddenTestCases || []).map((tc, i) => (
-          <div key={i} className="grid grid-cols-2 gap-2 mt-2">
-            <input
-              value={tc.input}
-              placeholder="Input"
-              onChange={(e) =>
-                updateTestCase("hiddenTestCases", i, "input", e.target.value)
-              }
-              className="rounded-md border px-3 py-2"
-            />
-            <input
-              value={tc.output}
-              placeholder="Output"
-              onChange={(e) =>
-                updateTestCase("hiddenTestCases", i, "output", e.target.value)
-              }
-              className="rounded-md border px-3 py-2"
-            />
-            <div className="col-span-2 flex justify-end">
+          <div key={i} className="space-y-2 mt-4 border rounded-md p-3">
+            <div>
+              <label className="text-xs font-medium">Input</label>
+              <textarea
+                rows={4}
+                value={tc.input}
+                placeholder="Input"
+                onChange={(e) =>
+                  updateTestCase("hiddenTestCases", i, "input", e.target.value)
+                }
+                className="w-full rounded-md border px-3 py-2 font-mono resize-y"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium">Output</label>
+              <textarea
+                rows={2}
+                value={tc.output}
+                placeholder="Output"
+                onChange={(e) =>
+                  updateTestCase("hiddenTestCases", i, "output", e.target.value)
+                }
+                className="w-full rounded-md border px-3 py-2 font-mono resize-y"
+              />
+            </div>
+
+            <div className="flex justify-end">
               <button
                 type="button"
                 onClick={() => removeTestCase("hiddenTestCases", i)}
@@ -288,6 +322,7 @@ const ProblemForm = ({ problem, onDone }) => {
             </div>
           </div>
         ))}
+
         <button
           type="button"
           onClick={() => addTestCase("hiddenTestCases")}

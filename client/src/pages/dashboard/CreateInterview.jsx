@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { useInterviewStore } from "../../store/interviewStore.js";
+import { consumeCredits } from "../../api/creditUsageApi.js";
+import { ThemeContext } from "../../context/ThemeContext.jsx";
 
 const difficultyOptions = ["easy", "medium", "hard"];
 const interviewTypeOptions = [
@@ -38,12 +40,27 @@ const CreateInterview = () => {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
+  const { darkMode } = useContext(ThemeContext);
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLocalError("");
 
     if (!form.role.trim()) {
       setLocalError("Role is required.");
+      return;
+    }
+
+    // Credit monetization: charge before generating AI questions
+    try {
+      await consumeCredits({
+        featureUsed: "ai-interview",
+        creditsConsumed: 1,
+      });
+    } catch (err) {
+      setLocalError(
+        err?.response?.data?.message ||
+          "Not enough credits. Please buy credits.",
+      );
       return;
     }
 
@@ -71,7 +88,7 @@ const CreateInterview = () => {
           <p className="text-sm uppercase tracking-[0.24em] text-slate-400">
             Create interview
           </p>
-          <h2 className="text-3xl font-semibold text-slate-900 dark:text-white">
+          <h2 className={`text-2xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>
             Generate a focused AI session
           </h2>
           <p className="mt-2 text-sm text-slate-400">

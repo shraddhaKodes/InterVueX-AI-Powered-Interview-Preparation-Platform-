@@ -5,6 +5,7 @@ import {
   loginWithGoogle,
   forgotPassword as forgotPasswordRequest,
   resetPassword as resetPasswordRequest,
+  getUserProfile,
 } from "../api/authApi.js";
 
 const AuthContext = createContext(null);
@@ -32,6 +33,33 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     setIsAuthenticated(Boolean(token));
+  }, [token]);
+
+  // Ensure user object (especially role) is populated for existing sessions
+  useEffect(() => {
+    const shouldFetchMe = Boolean(token) && (!user || !user?.role);
+    if (!shouldFetchMe) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await getUserProfile();
+        if (cancelled) return;
+
+        // GET /user/me returns: { success: true, user }
+        const meUser = res?.user || res;
+        if (meUser?.role) {
+          saveSession({ token, user: meUser });
+        }
+      } catch (e) {
+        // keep silent; navbar will just not show admin
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
 
   const saveSession = (data) => {

@@ -14,11 +14,12 @@ import CreateInterview from "./pages/dashboard/CreateInterview.jsx";
 import InterviewHistory from "./pages/dashboard/InterviewHistory.jsx";
 import InterviewResult from "./pages/dashboard/InterviewResult.jsx";
 import InterviewSession from "./pages/dashboard/InterviewSession.jsx";
-import MockInterviews from "./pages/dashboard/MockInterviews.jsx";
 import ResumeAnalyzer from "./pages/dashboard/ResumeAnalyzer.jsx";
 import CodingArena from "./pages/dashboard/CodingArena.jsx";
 import ChallengeEditorPage from "./pages/dashboard/ChallengeEditorPage.jsx";
 import AdminProblems from "./pages/codingArena/AdminProblems.jsx";
+import AdminUsers from "./pages/codingArena/AdminUsers.jsx";
+import AdminSubmissions from "./pages/codingArena/AdminSubmissions.jsx";
 import SubmissionHistory from "./pages/dashboard/SubmissionHistory.jsx";
 import AnalyticsPage from "./pages/dashboard/AnalyticsPage.jsx";
 import Payments from "./pages/dashboard/Payments.jsx";
@@ -56,11 +57,15 @@ const AppContent = () => {
             path="ai-interviews/:id/result"
             element={<InterviewResult />}
           />
-          <Route path="mock-interviews" element={<MockInterviews />} />
           <Route path="resume" element={<ResumeAnalyzer />} />
           <Route path="coding" element={<CodingArena />} />
           <Route path="coding/history" element={<SubmissionHistory />} />
           <Route path="coding/admin" element={<AdminProblems />} />
+          <Route
+            path="coding/admin/submissions"
+            element={<AdminSubmissions />}
+          />
+          <Route path="coding/admin/users" element={<AdminUsers />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="payments" element={<Payments />} />
           <Route path="settings" element={<Settings />} />

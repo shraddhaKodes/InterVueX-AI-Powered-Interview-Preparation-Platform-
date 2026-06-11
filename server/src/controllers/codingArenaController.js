@@ -7,6 +7,8 @@ import {
   getUserSubmissionsService,
   getSubmissionByIdService,
 } from "../services/codingArenaService.js";
+import { consumeCreditsService } from "../services/creditUsageService.js";
+import { FEATURE_CREDITS } from "../config/featureCredits.js";
 
 export const listProblems = catchAsyncErrors(async (req, res) => {
   const result = await listProblemsService(req.query, req.user);
@@ -27,12 +29,14 @@ export const getProblemById = catchAsyncErrors(async (req, res) => {
 });
 
 export const runCode = catchAsyncErrors(async (req, res) => {
+  // Run Code is free (no credit consumption)
   const { sourceCode, language, input, customInput } = req.body;
   const execution = await runCodeService({
     sourceCode,
     language,
     input: input ?? customInput ?? "",
   });
+
   res.status(200).json({
     success: true,
     message: "Code executed successfully",
@@ -41,8 +45,16 @@ export const runCode = catchAsyncErrors(async (req, res) => {
 });
 
 export const submitSolution = catchAsyncErrors(async (req, res) => {
+  const creditsToConsume = FEATURE_CREDITS["Submit Solution"];
+
+  await consumeCreditsService(req.user.id, {
+    featureUsed: "coding-arena",
+    creditsConsumed: creditsToConsume,
+  });
+
   const { problemId, sourceCode, language, parallel } = req.body;
   const userId = req.user?.id;
+
   const result = await submitSolutionService({
     userId,
     problemId,
@@ -50,6 +62,7 @@ export const submitSolution = catchAsyncErrors(async (req, res) => {
     language,
     parallel,
   });
+
   res.status(200).json({
     success: true,
     message: "Solution submitted successfully",

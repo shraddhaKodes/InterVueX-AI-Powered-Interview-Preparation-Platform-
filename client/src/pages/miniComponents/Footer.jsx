@@ -24,7 +24,6 @@ const Footer = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto">
-        {/* Top Grid Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-1 space-y-4">
@@ -35,7 +34,9 @@ const Footer = () => {
               </h2>
             </div>
             <p
-              className={`text-sm leading-relaxed ${darkMode ? "text-slate-400" : "text-slate-500"}`}
+              className={`text-sm leading-relaxed ${
+                darkMode ? "text-slate-400" : "text-slate-500"
+              }`}
             >
               AI-powered interview practice, feedback, and analytics for every
               aspiring developer.
@@ -48,7 +49,9 @@ const Footer = () => {
               Platform
             </h4>
             <ul
-              className={`space-y-2 text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+              className={`space-y-2 text-sm ${
+                darkMode ? "text-slate-400" : "text-slate-600"
+              }`}
             >
               <li className="hover:text-cyan-400 cursor-pointer transition">
                 Mock Interviews
@@ -67,7 +70,9 @@ const Footer = () => {
               Company
             </h4>
             <ul
-              className={`space-y-2 text-sm ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+              className={`space-y-2 text-sm ${
+                darkMode ? "text-slate-400" : "text-slate-600"
+              }`}
             >
               <li className="hover:text-blue-500 cursor-pointer transition">
                 About Us
@@ -81,7 +86,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter/Social */}
+          {/* Socials Column */}
           <div className="space-y-4">
             <h4 className="font-bold mb-4 uppercase text-xs tracking-widest text-cyan-400">
               Socials
@@ -108,8 +113,8 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className={`p-3 rounded-xl transition-all ${
                     darkMode
-                      ? "bg-slate-900 hover:bg-cyan-600"
-                      : "bg-slate-100 hover:bg-cyan-500 hover:text-white"
+                      ? "bg-slate-900 text-white hover:bg-cyan-600"
+                      : "bg-slate-100 text-slate-700 hover:bg-cyan-500 hover:text-white"
                   }`}
                 >
                   {social.icon}
@@ -132,7 +137,7 @@ const Footer = () => {
 
           <button
             onClick={scrollToTop}
-            className={`flex items-center gap-2 text-xs font-bold uppercase tracking-tighter hover:text-blue-500 transition-all`}
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-tighter hover:text-blue-500 transition-all text-slate-500"
           >
             Back to top <FaArrowUp />
           </button>

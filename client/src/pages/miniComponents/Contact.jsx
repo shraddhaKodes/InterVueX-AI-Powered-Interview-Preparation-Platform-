@@ -76,10 +76,13 @@ const Contact = () => {
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
             <h2
-              className={`text-5xl font-black mb-6 ${darkMode ? "text-white" : "text-slate-900"}`}
+              className={`text-5xl font-black mb-6 ${
+                darkMode ? "text-white" : "text-slate-900"
+              }`}
             >
               Need help preparing?
               <br />
@@ -88,7 +91,9 @@ const Contact = () => {
               </span>
             </h2>
             <p
-              className={`text-lg mb-10 ${darkMode ? "text-slate-400" : "text-slate-600"}`}
+              className={`text-lg mb-10 ${
+                darkMode ? "text-slate-400" : "text-slate-600"
+              }`}
             >
               Questions about onboarding, interview practice, or account setup?
               Our team is ready to help you become interview ready.
@@ -98,18 +103,26 @@ const Contact = () => {
               {contactItems.map((item, i) => (
                 <div key={i} className="flex items-center gap-4">
                   <div
-                    className={`p-4 rounded-xl ${darkMode ? "bg-slate-800 text-cyan-300" : "bg-cyan-50 text-cyan-600"}`}
+                    className={`p-4 rounded-xl ${
+                      darkMode
+                        ? "bg-slate-800 text-cyan-300"
+                        : "bg-cyan-50 text-cyan-600"
+                    }`}
                   >
                     {item.icon}
                   </div>
                   <div>
                     <p
-                      className={`text-sm font-bold uppercase tracking-widest ${darkMode ? "text-slate-500" : "text-slate-400"}`}
+                      className={`text-sm font-bold uppercase tracking-widest ${
+                        darkMode ? "text-slate-500" : "text-slate-400"
+                      }`}
                     >
                       {item.label}
                     </p>
                     <p
-                      className={`text-lg font-semibold ${darkMode ? "text-white" : "text-slate-800"}`}
+                      className={`text-lg font-semibold ${
+                        darkMode ? "text-white" : "text-slate-800"
+                      }`}
                     >
                       {item.val}
                     </p>
@@ -122,6 +135,7 @@ const Contact = () => {
           <motion.form
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             onSubmit={handleMessage}
             className={`p-8 rounded-3xl border shadow-2xl space-y-6 ${
@@ -133,7 +147,9 @@ const Contact = () => {
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label
-                  className={`text-sm font-bold ${darkMode ? "text-slate-300" : "text-slate-700"}`}
+                  className={`text-sm font-bold ${
+                    darkMode ? "text-slate-300" : "text-slate-700"
+                  }`}
                 >
                   Name
                 </label>
@@ -151,7 +167,9 @@ const Contact = () => {
               </div>
               <div className="space-y-2">
                 <label
-                  className={`text-sm font-bold ${darkMode ? "text-slate-300" : "text-slate-700"}`}
+                  className={`text-sm font-bold ${
+                    darkMode ? "text-slate-300" : "text-slate-700"
+                  }`}
                 >
                   Subject
                 </label>
@@ -171,7 +189,9 @@ const Contact = () => {
 
             <div className="space-y-2">
               <label
-                className={`text-sm font-bold ${darkMode ? "text-slate-300" : "text-slate-700"}`}
+                className={`text-sm font-bold ${
+                  darkMode ? "text-slate-300" : "text-slate-700"
+                }`}
               >
                 Message
               </label>

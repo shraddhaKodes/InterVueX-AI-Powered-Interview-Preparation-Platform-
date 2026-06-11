@@ -24,20 +24,40 @@ const tooltipStyle = {
 };
 
 const AnalyticsCharts = ({ analytics }) => {
+  // Keep existing schema rendering; only make headings safe/dynamic without extra API calls.
+  const weeklyProgress = analytics?.weeklyProgress ?? [];
+  const topicPerformance = analytics?.topicPerformance ?? [];
+  const scoreTrend = analytics?.scoreTrend ?? [];
+
+  const weeklyProgressTitle =
+    analytics?.weeklyProgressTitle ?? "Weekly progress";
+  const weeklyMomentumTitle =
+    analytics?.weeklyMomentumTitle ?? "Interview Score Momentum";
+  const weeklyDelta = analytics?.weeklyProgressDelta ?? "+9% this week";
+
+  const topicPerformanceTitle =
+    analytics?.topicPerformanceTitle ?? "Topic performance";
+  const topicPerformanceHeading =
+    analytics?.topicPerformanceHeading ?? "Coding Strength";
+
+  const scoreTrendsTitle = analytics?.scoreTrendsTitle ?? "Score trends";
+  const scoreTrendsHeading =
+    analytics?.scoreTrendsHeading ?? "AI track summary";
+
   return (
     <div className="grid gap-5 xl:grid-cols-[1.7fr_1.1fr]">
       <div className="rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl">
         <div className="mb-5 flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-slate-400">
-              Weekly progress
+              {weeklyProgressTitle}
             </p>
             <h3 className="mt-2 text-xl font-semibold text-white">
-              Score momentum
+              {weeklyMomentumTitle}
             </h3>
           </div>
           <span className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-200">
-            +9% this week
+            {weeklyDelta}
           </span>
         </div>
 
@@ -99,7 +119,7 @@ const AnalyticsCharts = ({ analytics }) => {
               Topic performance
             </p>
             <h3 className="mt-2 text-xl font-semibold text-white">
-              Strength by domain
+              Coding Strength
             </h3>
           </div>
           <div className="h-[240px]">
