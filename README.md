@@ -1,321 +1,839 @@
-# InterVueX — AI-Powered Interview Preparation Platform
+# 🚀 InterVueX — AI-Powered Interview Preparation & Career Readiness Platform
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](#)
-[![Node.js](https://img.shields.io/badge/Node.js-20-43853D?logo=node.js)](#)
-[![Express](https://img.shields.io/badge/Express.js-4-000000?logo=express)](#)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb)](#)
-[![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=json-web-token)](#)
-[![AI](https://img.shields.io/badge/AI-Gemini%2FOpenAI-F97316?logo=openai)](#)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-4-38BDF8?logo=tailwind-css)](#)
+![MERN](https://img.shields.io/badge/MERN-Stack-green)
 
-> Build your interview edge with AI mock rounds, coding assessments, resume analysis, and performance analytics — all in one place.
+![React](https://img.shields.io/badge/Frontend-React-blue)
 
----
+![Node.js](https://img.shields.io/badge/Backend-Node.js-brightgreen)
 
-## 🚀 Project Banner / Headline
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)
 
-**InterVueX** helps candidates prepare like top engineers: generate tailored AI interviews, practice coding with online execution, analyze resume skill gaps, and track progress over time with actionable analytics.
+![Socket.IO](https://img.shields.io/badge/Realtime-Socket.IO-black)
 
----
+![Gemini AI](https://img.shields.io/badge/AI-Gemini-orange)
 
-## 📌 Overview
+InterVueX is a full-stack SaaS-style platform designed to help students, interns, and job seekers improve their interview readiness through AI-powered mock interviews, resume analysis, coding assessments, real-time notifications, and performance analytics.
 
-InterVueX is an AI-powered interview preparation platform built for real-world outcomes: better clarity, better coding practice, and measurable growth.
-
-Core modules include:
-
-- User authentication & authorization (JWT)
-- AI mock interviews & evaluation (Gemini/OpenAI)
-- Coding Arena with online code execution
-- Resume analyzer + skill-gap detection
-- Unified dashboard with progress tracking and analytics
-- Interview & coding submission history
-- Leaderboards / progress metrics
+Built using the MERN stack, Gemini AI, Socket.IO, and cloud-based services, the platform focuses on delivering a scalable and personalized preparation experience while demonstrating production-grade software engineering practices.
 
 ---
 
-## ✨ Features (FAANG-style, outcome driven)
+# 🎯 Problem Statement
 
-- 🔐 **Authentication & Authorization**: secure JWT-based access control
-- 🧠 **AI Mock Interviews**: generate role-based technical questions and evaluate answers
-- 🧾 **Coding Assessments**: problem solving with online execution provider
-- 🕹️ **Coding Arena**: visible + hidden test case evaluation with verdicts
-- 📄 **Resume Analysis**: extract skills, compute ATS score, generate feedback
-- 🎯 **Skill Gap Detection**: identify missing competencies and prioritize improvements
-- 📊 **Interview Performance Analytics**: rubric-based scoring and trends
-- 🗂️ **Dashboard Tracking**: unified progress across interviews and coding
-- 👤 **Profile Management**: manage user preferences and account details
-- 📨 **Password Reset via Email**: secure reset flow with email notifications
-- 🧠 **Interview History**: revisit past rounds and evaluations
-- 💻 **Submission History**: track coding attempts and outcomes
-- 🏆 **Leaderboards & Metrics**: progress-based rankings and insights
+Preparing for technical interviews often requires multiple disconnected tools for:
 
----
+- Resume review
 
-## 🧩 System Architecture
+- Coding practice
 
-### High-level flow
+- Interview preparation
 
-1. **Frontend (React + Tailwind)** collects user inputs (interviews, coding, resumes).
-2. **Backend (Node.js + Express)** handles:
-   - authentication (JWT)
-   - routing + validation
-   - AI evaluation/generation (Gemini/OpenAI)
-   - resume parsing and analysis
-   - coding execution orchestration
-   - analytics + persistence in MongoDB
-3. **MongoDB Atlas** stores interviews, evaluations, resume analyses, submissions, and user data.
-4. **Cloudinary** can be used for resume/assets storage.
-5. **Sockets/Events (if enabled)** support real-time coding/interview UI updates.
+- Progress tracking
 
-### Component diagram (text)
+InterVueX unifies these workflows into a single platform by providing:
 
-- `Client (React)`
-  - Auth pages, Dashboard, Coding Arena UI
-- `Server (Express)`
-  - `authRoutes`, `interviewRoutes`, `codingArenaRoutes`, `resumeAnalysisRoutes`, `analyticsRoutes`
-  - services: AI, execution provider, resume analysis, analytics
-- `MongoDB Atlas`
-  - user, interviews, mock interviews, submissions, analytics schemas
+- AI-powered interview simulations
+
+- Resume quality and ATS analysis
+
+- Coding assessments
+
+- Career readiness evaluation
+
+- Real-time notifications
+
+- Secure authentication and account management
 
 ---
 
-## 🛠️ Tech Stack
+# ✨ Core Features
 
-| Category         | Tech                                 |
-| ---------------- | ------------------------------------ |
-| Frontend         | React.js, Tailwind CSS               |
-| Backend          | Node.js, Express.js                  |
-| Database         | MongoDB (MongoDB Atlas)              |
-| Authentication   | JWT (access tokens)                  |
-| AI Services      | Gemini / OpenAI APIs                 |
-| Media            | Cloudinary                           |
-| Email            | Nodemailer                           |
-| Coding Execution | Online compiler provider (API-based) |
+## 🔐 Authentication & Security
+
+- JWT Authentication
+
+- Secure Password Hashing using bcrypt
+
+- Protected Routes
+
+- Role-Based Access Control (RBAC)
+
+- Email Verification Workflow
+
+- Forgot Password Functionality
+
+- Reset Password Functionality
+
+- Secure Token-Based Authentication
+
+- Email Validation Layer using ZeroBounce
 
 ---
 
-## 📁 Folder Structure (Monorepo)
+## 📧 Email Service Infrastructure
 
-```txt
-IntervueX/
-  client/
-    src/
-    public/
-    package.json
-  server/
-    src/
-      controllers/
-      routes/
-      services/
-      models/
-      middlewares/
-    uploads/
-    package.json
-  .gitignore
-  README.md
+Powered by Brevo Transactional Email Services.
+
+### Supported Email Flows
+
+- Welcome Emails
+
+- Email Verification Emails
+
+- Password Reset Emails
+
+- Security Notifications
+
+- User Engagement Emails
+
+- Platform Updates
+
+### Features
+
+- HTML Email Templates
+
+- Secure Verification Tokens
+
+- Email Validation Before Registration
+
+- Reliable Transactional Delivery
+
+- Error Handling & Retry Logic
+
+---
+
+## 🔔 Real-Time Notification System
+
+Built using Socket.IO and MongoDB Persistence.
+
+### Features
+
+- Real-Time Event Delivery
+
+- Persistent Notification Storage
+
+- Read / Unread Tracking
+
+- User-Specific Notifications
+
+- Admin Broadcast Notifications
+
+- Notification History Management
+
+---
+
+## 🎤 AI Interview Module
+
+Powered by Gemini AI.
+
+### Features
+
+- Dynamic Interview Question Generation
+
+- AI-Powered Mock Interviews
+
+- Performance Evaluation
+
+- Communication Assessment
+
+- Answer Quality Analysis
+
+- AI Feedback Generation
+
+- Personalized Improvement Suggestions
+
+---
+
+## 📄 Resume Analysis Module
+
+### Features
+
+- Resume Upload & Parsing
+
+- ATS Compatibility Analysis
+
+- Resume Quality Scoring
+
+- Skill Gap Detection
+
+- Recruiter Readiness Insights
+
+- AI Improvement Recommendations
+
+- Resume Optimization Suggestions
+
+- ATS Score Calculation
+
+- Keyword Match Analysis
+
+- Skills Extraction
+
+---
+
+## 💻 Coding Assessment Platform
+
+### Features
+
+- Coding Challenges
+
+- Multi-Language Support (C++, Java, JavaScript, Python)
+
+- Test Case Validation
+
+- Hidden Test Cases
+
+- Submission Tracking
+
+- Performance Monitoring
+
+- Progress Analytics
+
+---
+
+## 📊 Analytics Dashboard
+
+### Features
+
+- Interview Performance Analytics
+
+- Coding Performance Analytics
+
+- Resume Improvement Metrics
+
+- AI-Generated Insights
+
+- Career Readiness Score
+
+- Strength Analysis
+
+- Weakness Detection
+
+- Personalized Improvement Guide
+
+- Learning Path Recommendations
+
+- Progress Tracking
+
+- Learning Trend Visualization
+
+---
+
+## 💳 Credits & Payments
+
+InterVueX uses a credit-based model for premium AI and platform features.
+
+### Credit Usage
+
+- Consume credits per feature usage (e.g., AI interview)
+
+- Track remaining credits and usage history
+
+- Credit history stored in MongoDB
+
+### Payments
+
+- Razorpay integration for credit packs
+- Create payment order, verify payment signature
+- Credit deposit on successful verification
+- Payment history & status stored in MongoDB
+
+---
+
+## 👤 User Profile Management
+
+- Profile Customization
+
+- Career Goal Tracking
+
+- Learning History
+
+- Activity Tracking
+
+- Progress Monitoring
+
+---
+
+## 🛡️ Admin Dashboard
+
+### Features
+
+- User Management
+
+- Coding Problem Management
+
+- Analytics Monitoring
+
+- Notification Broadcasting
+
+- Platform Administration
+
+---
+
+# 🏗️ System Architecture
+
+```text
+
+┌──────────────────────────────┐
+
+│         React Client         │
+
+└──────────────┬───────────────┘
+
+               │
+
+               ▼
+
+┌──────────────────────────────┐
+
+│       Express API Layer      │
+
+└──────┬───────┬───────┬───────┘
+
+       │       │       │
+
+       ▼       ▼       ▼
+
+ Authentication  AI Services  Notification Service
+
+       │             │               │
+
+       ▼             ▼               ▼
+
+ JWT Auth     Gemini AI      Socket.IO Server
+
+ Email Verify Resume AI      Notification Engine
+
+ Password Reset Interview AI MongoDB Persistence
+
+       │
+
+       ▼
+
+┌──────────────────────────────┐
+
+│          MongoDB             │
+
+└──────────────────────────────┘
+
 ```
 
 ---
 
-## 🔧 Installation & Setup
+# ⚙️ Technology Stack
 
-### 1) Clone
+## Frontend
+
+- React.js
+
+- Tailwind CSS
+
+- React Router
+
+- Axios
+
+## Backend
+
+- Node.js
+
+- Express.js
+
+- JWT
+
+- bcrypt
+
+- Socket.IO
+
+- Express Middleware
+
+## Database
+
+- MongoDB
+
+- Mongoose
+
+## AI Services
+
+- Gemini AI
+
+## Email Services
+
+- Brevo
+
+- ZeroBounce
+
+## Media Storage
+
+- Cloudinary
+
+---
+
+# 🗂️ Project Structure
 
 ```bash
-git clone <your-repo-url>
-cd IntervueX
+
+InterVueX
+
+│
+
+├── client
+
+│   ├── src
+
+│   │   ├── components
+
+│   │   ├── pages
+
+│   │   ├── hooks
+
+│   │   ├── services
+
+│   │   ├── context
+
+│   │   └── utils
+
+│
+
+├── server
+
+│   ├── src
+
+│   │   ├── config
+
+│   │   ├── controllers
+
+│   │   ├── middleware
+
+│   │   ├── models
+
+│   │   ├── routes
+
+│   │   ├── services
+
+│   │   ├── sockets
+
+│   │   ├── utils
+
+│   │   └── jobs
+
+│
+
+├── README.md
+
+└── package.json
+
 ```
 
-### 2) Client (React)
+---
+
+# 🔄 Application Workflow
+
+## User Flow
+
+1\. Register Account
+
+2\. Email Verification
+
+3\. Login
+
+4\. Complete Profile
+
+5\. Upload Resume
+
+6\. Analyze Resume
+
+7\. Attend AI Interview
+
+8\. Solve Coding Problems
+
+9\. Receive Notifications
+
+10\. View Analytics Dashboard
+
+---
+
+## Admin Flow
+
+1\. Login to Dashboard
+
+2\. Manage Users
+
+3\. Create Coding Problems
+
+4\. Broadcast Notifications
+
+5\. Monitor Analytics
+
+---
+
+# 🔒 Security Features
+
+- JWT Authentication
+
+- Password Hashing with bcrypt
+
+- Secure Cookie Handling
+
+- Token-Based Email Verification
+
+- Password Reset Tokens
+
+- Protected API Routes
+
+- Role-Based Authorization
+
+- Email Validation Layer
+
+- Input Validation & Sanitization
+
+---
+
+# 📈 Analytics Engine
+
+InterVueX combines data from:
+
+- AI Interview Sessions
+
+- Resume Analysis Reports
+
+- Coding Submissions
+
+- User Activity Logs
+
+To generate:
+
+- Personalized Recommendations
+
+- Improvement Suggestions
+
+- Progress Trends
+
+- Performance Reports
+
+---
+
+# 📧 Email Service Architecture
+
+```text
+
+User Registration
+
+       │
+
+       ▼
+
+Email Validation (ZeroBounce)
+
+       │
+
+       ▼
+
+Generate Verification Token
+
+       │
+
+       ▼
+
+Brevo Email Service
+
+       │
+
+       ▼
+
+Verification Email Delivery
+
+       │
+
+       ▼
+
+Account Activation
+
+```
+
+---
+
+# 🔔 Notification Architecture
+
+```text
+
+System Event
+
+      │
+
+      ▼
+
+Notification Service
+
+      │
+
+      ▼
+
+Store in MongoDB
+
+      │
+
+      ▼
+
+Socket.IO Event
+
+      │
+
+      ▼
+
+Connected User
+
+```
+
+---
+
+# 🚀 Installation Guide
+
+## Clone Repository
 
 ```bash
+
+git clone https://github.com/your-username/intervuex.git
+
+cd intervuex
+
+```
+
+## Install Client
+
+```bash
+
 cd client
+
 npm install
+
 npm run dev
+
 ```
 
-### 3) Server (Express)
+## Install Server
 
 ```bash
-cd server
-npm install
-npm run dev
-```
 
-> Ensure both client and server are running. Configure `VITE_API_BASE_URL` (or equivalent) on the client to point to your backend.
+cd server
+
+npm install
+
+npm run dev
+
+```
 
 ---
 
-## ⚙️ Environment Variables
+# 🔧 Environment Variables
 
-Create environment files as needed.
+## Client
 
-### Client environment (example)
+```env
 
-Create `client/.env`:
+VITE_API_BASE_URL=http://localhost:5000
 
-```bash
-VITE_API_BASE_URL=http://localhost:4000
 ```
 
-### Server environment (example)
+## Server
 
-Create `server/.env`:
+```env
 
-```bash
 NODE_ENV=development
-PORT=4000
 
-# MongoDB
-MONGO_URI=<your_mongodb_atlas_connection_string>
+PORT=5000
 
-# JWT
-JWT_SECRET=<your_jwt_secret>
+MONGO_URI=your_mongodb_uri
+
+JWT_SECRET=your_jwt_secret
+
 JWT_EXPIRES_IN=7d
 
-# Email (Password reset)
-SMTP_HOST=<smtp_host>
-SMTP_PORT=587
-SMTP_USER=<smtp_user>
-SMTP_PASS=<smtp_pass>
-EMAIL_FROM=<from_email>
+GEMINI_API_KEY=your_gemini_api_key
 
-# Cloudinary (if uploading resumes/assets)
-CLOUDINARY_CLOUD_NAME=<cloudinary_cloud_name>
-CLOUDINARY_API_KEY=<cloudinary_api_key>
-CLOUDINARY_API_SECRET=<cloudinary_api_secret>
+BREVO_API_KEY=your_brevo_api_key
 
-# AI Provider (Gemini / OpenAI)
-GEMINI_API_KEY=<your_gemini_api_key>
-# or
-OPENAI_API_KEY=<your_openai_api_key>
+BREVO_SENDER_EMAIL=your_sender_email
 
-# Coding execution provider
-ONLINE_COMPILER_BASE_URL=<provider_base_url>
-ONLINE_COMPILER_API_KEY=<provider_api_key>
+ZEROBOUNCE_API_KEY=your_zerobounce_api_key
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+
+CLOUDINARY_API_KEY=your_cloudinary_key
+
+CLOUDINARY_API_SECRET=your_cloudinary_secret
+
+RAZORPAY_KEY_ID=your_razorpay_key_id
+
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+
 ```
 
 ---
 
-## 🌐 API Endpoints Overview
+# 🌍 Deployment
 
-Primary documentation:
+## Frontend
+
+- Vercel
+
+- Netlify
+
+## Backend
+
+- Render
+
+- Railway
+
+- VPS
+
+## Database
+
+- MongoDB Atlas
+
+---
+
+# 📚 API Endpoints
+
+Postman-ready base URL (local):
+
+- `http://localhost:4000`
+
+Full endpoint list:
 
 - `server/API_ENDPOINTS.md`
 
-API is broadly organized into:
+Protected endpoints require:
 
-- **Auth**: register/login/logout/me + password reset
-- **Interviews**: create interview, generate AI questions, evaluate answers
-- **Mock Interviews**: mock question rounds and scoring
-- **Resume Analyzer**: extract skills, compute ATS score, generate feedback
-- **Coding Submissions**: store/verdict submissions
-- **Coding Arena**: problem CRUD + test execution
-- **Analytics**: dashboard metrics and streaks
-- **Payments & Credit Usage**: plan handling + credit consumption
+- `Authorization: Bearer <JWT_TOKEN>`
+- `Content-Type: application/json`
+
+AI question generation requires:
+
+- `GEMINI_API_KEY` configured on the server
 
 ---
 
-## 🖼️ Screenshots
+# 🏗️ Scalability Roadmap
 
-Add screenshots for portfolio/placement reviewers.
+Future enhancements planned for production-scale deployment:
 
-| Page            | Placeholder                                                           |
-| --------------- | --------------------------------------------------------------------- |
-| Landing / Hero  | ![Landing Screenshot](./docs/screenshots/landing.png)                 |
-| Login / Signup  | ![Auth Screenshot](./docs/screenshots/auth.png)                       |
-| Dashboard       | ![Dashboard Screenshot](./docs/screenshots/dashboard.png)             |
-| AI Interview    | ![AI Interview Screenshot](./docs/screenshots/ai-interview.png)       |
-| Coding Arena    | ![Coding Arena Screenshot](./docs/screenshots/coding-arena.png)       |
-| Resume Analyzer | ![Resume Analyzer Screenshot](./docs/screenshots/resume-analyzer.png) |
+### Performance
 
-> Place images under `docs/screenshots/`.
+- Redis Caching
 
----
+- Database Indexing
 
-## 🚀 Deployment
+- Aggregation Optimization
 
-### Deployments supported
+### Background Processing
 
-- **Vercel** (Frontend)
-- **Render** (Backend)
-- **MongoDB Atlas** (Database)
+- BullMQ
 
-#### 1) Vercel (Client)
+- Job Queues
 
-1. Push your repo to GitHub.
-2. Import the `client` project into Vercel.
-3. Set build command: `npm run build`
-4. Set output directory: `dist`
-5. Configure environment variables:
-   - `VITE_API_BASE_URL` → your Render backend URL
+- Email Workers
 
-#### 2) Render (Server)
+- Analytics Workers
 
-1. Create a Render Web Service for `server`.
-2. Set the start command:
-   - `npm run start` (or `npm run dev` only for staging)
-3. Set environment variables (from the Server Environment Variables section).
-4. Connect to MongoDB Atlas using `MONGO_URI`.
+### Infrastructure
 
-#### 3) Domain / HTTPS
+- Docker
 
-- Ensure your client points to the correct backend base URL.
-- If using JWT cookies or redirects, verify CORS and allowed origins.
+- Kubernetes
+
+- NGINX
+
+- CI/CD Pipelines
+
+### Architecture
+
+- Microservices
+
+- Event-Driven Architecture
+
+- Distributed Notification Service
+
+- AI Worker Services
 
 ---
 
-## 🧠 Future Enhancements
+# 💡 Engineering Highlights
 
-- 🤝 **Real-time interview collaboration** (multi-user rooms / shared sessions)
-- 🧾 **Export reports** (PDF resume/interview analytics)
-- 🧠 **Advanced rubric tuning** per role/company
-- 🗳️ **Community problem submissions + moderation**
-- 💾 **Caching layer** for AI responses to reduce token usage
-- 🔍 **Resume parsing improvements** using more robust parsing strategies
-- 🏢 **Team dashboards** for internship / cohort tracking
+- Modular Backend Architecture
 
----
+- Service-Oriented Design
 
-## 🤝 Contributing
+- RESTful API Design
 
-Contributions are welcome!
+- Real-Time Communication
 
-### Development workflow
+- Persistent Notification System
 
-1. Fork the repository
-2. Create a new branch:
-   ```bash
-   git checkout -b feature/<name>
-   ```
-3. Commit changes:
-   ```bash
-   git commit -m "feat: <description>"
-   ```
-4. Push to your fork and open a Pull Request.
+- Secure Authentication Workflow
 
-### Code style
+- AI Integration Layer
 
-- Keep commits small and readable
-- Add/Update documentation for new APIs/features
+- Cloud Storage Integration
+
+- Analytics Aggregation Engine
 
 ---
 
-## 📝 License
+# 📸 Screenshots
 
-This project is licensed under the **MIT License**.
+Add screenshots here:
+
+- Landing Page
+
+- Dashboard
+
+- AI Interview
+
+- Resume Analysis
+
+- Coding Assessment
+
+- Admin Dashboard
 
 ---
 
-## 📫 Contact
+# 👩‍💻 Author
 
-- **Project Maintainer**: _Your Name_
-- **Email**: *your.email@example.com*
-- **GitHub**: *https://github.com/<your-username>*
+**Shraddha Kumari**
+
+Electrical Engineering Student | Full Stack Developer | AI Enthusiast
+
+### Skills
+
+- C++
+
+- JavaScript
+
+- React.js
+
+- Node.js
+
+- Express.js
+
+- MongoDB
+
+- AI Integration
+
+- System Design
+
+GitHub: https://github.com/your-username
+
+LinkedIn: https://linkedin.com/in/your-profile
+
+# ⭐ Support
+
+If you found this project useful:
+
+- Star the repository
+
+- Share it with others
+
+- Contribute to the project
 
 ---
 
-## ✅ Badges (Portfolio-friendly)
-
-React • Node.js • Express • MongoDB • JWT • AI (Gemini/OpenAI) • Tailwind CSS
+## 🚀 InterVueX --- Your AI-Powered Career Growth Platform
