@@ -17,6 +17,13 @@ InterVueX is a full-stack SaaS-style platform designed to help students, interns
 Built using the MERN stack, Gemini AI, Socket.IO, and cloud-based services, the platform focuses on delivering a scalable and personalized preparation experience while demonstrating production-grade software engineering practices.
 
 ---
+## 🌐 Live Demo
+
+**Frontend:** https://intervuex-ai.netlify.app
+
+**Backend API:**https://intervuex-ai-powered-interview.onrender.com
+
+> Experience AI-powered interviews, resume analysis, coding assessments, analytics, and career readiness tracking in one platform.
 
 # 🎯 Problem Statement
 
@@ -798,9 +805,11 @@ Add screenshots here:
 
 # 👩‍💻 Author
 
-**Shraddha Kumari**
+**Shraddha Kumari**  
+*Electrical Engineering Student | Full Stack Developer | Competitive Programmer*
 
-Electrical Engineering Student | Full Stack Developer | AI Enthusiast
+- **GitHub:** [github.com/shraddha-kumari](https://github.com/shraddhaKodes) <!-- Update with your actual username -->
+- **LinkedIn:** [linkedin.com/in/shraddha-kumari](https://www.linkedin.com/in/shraddhakodes) <!-- Update with your actual username -->
 
 ### Skills
 
@@ -820,20 +829,13 @@ Electrical Engineering Student | Full Stack Developer | AI Enthusiast
 
 - System Design
 
-GitHub: https://github.com/your-username
+# © Copyright & Usage
 
-LinkedIn: https://linkedin.com/in/your-profile
+Copyright © 2026 Shraddha Kumari. All Rights Reserved.
 
-# ⭐ Support
+This repository is published for portfolio, educational, and demonstration purposes only.
 
-If you found this project useful:
+Unauthorized copying, redistribution, commercial use, or reproduction of substantial portions of this codebase is prohibited without prior written permission from the author.
 
-- Star the repository
-
-- Share it with others
-
-- Contribute to the project
-
----
 
 ## 🚀 InterVueX --- Your AI-Powered Career Growth Platform
