@@ -69,14 +69,22 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// NOTE: express-fileupload can conflict with multipart handling (e.g., multer).
-// This app relies on multer for resume uploads; keep express-fileupload for legacy endpoints only if needed.
-app.use(
-  fileUpload({
-    useTempFiles: true,
-    tempFileDir: "./tmp/",
-  }),
-);
+const legacyFileUpload = fileUpload({
+  useTempFiles: true,
+  tempFileDir: "./tmp/",
+});
+
+// express-fileupload and multer both parse multipart streams. 
+//Resume analysis uses multer, so keep the legacy parser away from that route.
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/v1/resume-analysis")) {
+    return next();
+  }
+
+  return legacyFileUpload(req, res, next);
+});
+
+
 
 // TEST ROUTE
 app.get("/", (req, res) => {
