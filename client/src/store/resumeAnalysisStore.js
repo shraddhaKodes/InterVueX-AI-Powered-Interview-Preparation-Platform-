@@ -56,7 +56,10 @@ export const useResumeAnalysisStore = create((set) => ({
       });
     } catch (err) {
       set({
-        error: err?.message || "Resume analysis failed",
+        error:
+          err?.response?.data?.message ||
+          err?.message ||
+          "Resume analysis failed",
       });
     } finally {
       set({ loading: false });
