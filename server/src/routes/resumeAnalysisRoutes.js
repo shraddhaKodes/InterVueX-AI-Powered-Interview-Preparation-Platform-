@@ -12,7 +12,7 @@ import {
   validatePagination,
   validateRequiredFields,
 } from "../middlewares/validation.js";
-import { uploadResumePdf } from "./resumeAnalysisMulter.js";
+import { handleResumeUpload } from "./resumeAnalysisMulter.js";
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router.use(isAuthenticated);
 
 router
   .route("/")
-  .post(uploadResumePdf.single("resume"), analyzeResume)
+  .post(handleResumeUpload, analyzeResume)
   .get(validatePagination, getResumeAnalyses);
 
 // Keep legacy resumeUrl endpoint (if client already sends resumeUrl)
