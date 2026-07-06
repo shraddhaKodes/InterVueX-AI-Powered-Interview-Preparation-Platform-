@@ -5,9 +5,8 @@ export const analyzeResume = async (file) => {
   const formData = new FormData();
   formData.append("resume", file);
 
-  // ❌ DO NOT set Content-Type manually (important fix)
+  // Let the browser set the multipart boundary.
   const { data } = await api.post("/resume-analysis", formData);
-
   return data;
 };
 
