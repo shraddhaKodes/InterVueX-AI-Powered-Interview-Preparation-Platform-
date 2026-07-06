@@ -15,6 +15,7 @@ import {
 } from "../../api/notificationApi.js";
 
 import { io } from "socket.io-client";
+import { createPortal } from "react-dom";
 
 /**
  * Production-ready Topbar for dashboard.
@@ -57,14 +58,6 @@ const Topbar = ({ credits = 0 }) => {
     ? "rounded-3xl mb-5 border border-white/10 bg-slate-950/70 p-3 shadow-xl shadow-black/20"
     : "rounded-3xl mb-5 border border-slate-200/60 bg-white/90 p-3 shadow-xl shadow-slate-900/10 backdrop-blur-xl";
 
-  const searchClass = darkMode
-    ? "flex items-center gap-3 rounded-3xl bg-slate-900/70 px-4 py-3 text-slate-300 shadow-inner shadow-black/20"
-    : "flex items-center gap-3 rounded-3xl bg-slate-100/80 px-4 py-3 text-slate-700 shadow-inner shadow-slate-900/10";
-
-  const inputClass = darkMode
-    ? "w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
-    : "w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-500";
-
   const controlButtonClass = darkMode
     ? "inline-flex h-12 items-center justify-center rounded-3xl border border-white/10 bg-slate-950/70 px-4 text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
     : "inline-flex h-12 items-center justify-center rounded-3xl border border-slate-200/60 bg-white/90 px-4 text-slate-900 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-500/40";
@@ -85,6 +78,25 @@ const Topbar = ({ credits = 0 }) => {
   const notifWrapRef = useRef(null);
   const debouncedRef = useRef(null);
 
+  const markAllNotificationsRead = useCallback(async () => {
+    try {
+      await markAllNotificationsReadRequest();
+      setNotifications((prev) =>
+        prev.map((n) => (n.read ? n : { ...n, read: true })),
+      );
+    } catch {
+      setNotifications((prev) =>
+        prev.map((n) => (n.read ? n : { ...n, read: true })),
+      );
+    }
+  }, []);
+
+  const markNotificationRead = useCallback((id) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    );
+  }, []);
+
   const runSearch = useCallback(
     async (q) => {
       const query = q.trim();
@@ -94,14 +106,11 @@ const Topbar = ({ credits = 0 }) => {
         setSearchError("");
         return;
       }
-      +(
-        // Local demo results (replace with real API calls)
-        setSearchLoading(true)
-      );
+
+      setSearchLoading(true);
       setSearchError("");
 
       try {
-        // Simulated latency
         await new Promise((r) => setTimeout(r, 180));
 
         const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -139,7 +148,7 @@ const Topbar = ({ credits = 0 }) => {
           .slice(0, 6);
 
         setSearchResults(results);
-      } catch (e) {
+      } catch {
         setSearchError("Search failed.");
         setSearchResults([]);
       } finally {
@@ -177,7 +186,6 @@ const Topbar = ({ credits = 0 }) => {
     };
   }, [search, runSearch]);
 
-  // Load persisted notifications on login / refresh
   useEffect(() => {
     let cancelled = false;
 
@@ -214,28 +222,6 @@ const Topbar = ({ credits = 0 }) => {
     };
   }, [user?.id, user?._id]);
 
-  const markAllNotificationsRead = useCallback(async () => {
-    try {
-      await markAllNotificationsReadRequest();
-
-      setNotifications((prev) =>
-        prev.map((n) => (n.read ? n : { ...n, read: true })),
-      );
-    } catch {
-      // keep UI optimistic; backend may fail while socket still works
-      setNotifications((prev) =>
-        prev.map((n) => (n.read ? n : { ...n, read: true })),
-      );
-    }
-  }, []);
-
-  const markNotificationRead = useCallback((id) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
-  }, []);
-
-  // Optional socket wiring (safe no-op if socket.io-client not configured)
   useEffect(() => {
     let socket;
 
@@ -243,11 +229,7 @@ const Topbar = ({ credits = 0 }) => {
       try {
         const url = import.meta.env.VITE_SOCKET_URL;
         const enabled = Boolean(url);
-        console.log("[socket] Topbar init. VITE_SOCKET_URL=", url);
         if (!enabled) return;
-
-        // socket.io-client is bundled via npm, so import { io } directly (no window.io)
-        // If the socket.io-client package isn't installed, this will throw and be caught below.
 
         socket = io(url, {
           autoConnect: true,
@@ -258,35 +240,7 @@ const Topbar = ({ credits = 0 }) => {
           },
         });
 
-        socket.on("connect", () => {
-          console.log("[socket] connected. socket.id=", socket?.id);
-          console.log(
-            "[socket] connect transport/auth token present=",
-            Boolean(localStorage.getItem("intervuex_token")),
-          );
-        });
-
-        socket.on("connect_error", (err) => {
-          console.log("[socket] connect_error:", err);
-        });
-
-        socket.on("disconnect", (reason) => {
-          console.log("[socket] disconnected:", reason);
-        });
-
-        socket.on("credits:updated", (payload) => {
-          const newCredits = payload?.credits;
-          if (Number.isFinite(Number(newCredits))) {
-            window.dispatchEvent(
-              new CustomEvent("credits:updated", {
-                detail: { credits: Number(newCredits) },
-              }),
-            );
-          }
-        });
-
         socket.on("notifications:new", (payload) => {
-          console.log("[socket] notifications:new received. payload=", payload);
           const list = Array.isArray(payload)
             ? payload
             : payload?.notifications
@@ -294,11 +248,6 @@ const Topbar = ({ credits = 0 }) => {
               : payload
                 ? [payload]
                 : [];
-
-          console.log(
-            "[socket] notifications:new parsed list (read flags)=",
-            list.map((n) => ({ id: n?.id || n?._id, read: n?.read, raw: n })),
-          );
 
           if (!list.length) return;
 
@@ -319,6 +268,17 @@ const Topbar = ({ credits = 0 }) => {
 
         socket.on("notifications:read", () => {
           markAllNotificationsRead();
+        });
+
+        socket.on("credits:updated", (payload) => {
+          const newCredits = payload?.credits;
+          if (Number.isFinite(Number(newCredits))) {
+            window.dispatchEvent(
+              new CustomEvent("credits:updated", {
+                detail: { credits: Number(newCredits) },
+              }),
+            );
+          }
         });
 
         socket.on("interview:completed", (payload) => {
@@ -357,7 +317,7 @@ const Topbar = ({ credits = 0 }) => {
             ].slice(0, 10),
           );
         });
-      } catch (e) {
+      } catch {
         // ignore socket errors; keep app functional
       }
     };
@@ -369,15 +329,16 @@ const Topbar = ({ credits = 0 }) => {
     };
   }, [markAllNotificationsRead]);
 
-  // credits updates are forwarded via a CustomEvent to keep UI/store loosely coupled
-
-  const notificationsPanelClass = darkMode
-    ? "absolute right-0 mt-3 z-[9999] w-[360px] max-w-[80vw] rounded-2xl border border-white/10 bg-slate-950/80 p-3 shadow-xl shadow-black/30 backdrop-blur max-h-[70vh] overflow-auto"
-    : "absolute right-0 mt-3 z-[9999] w-[360px] max-w-[80vw] rounded-2xl border border-slate-200/60 bg-white/90 p-3 shadow-xl shadow-slate-900/10 backdrop-blur max-h-[70vh] overflow-auto";
-
-  const notifItemClass = darkMode
-    ? "flex items-start gap-3 rounded-xl p-3 hover:bg-white/5 transition"
-    : "flex items-start gap-3 rounded-xl p-3 hover:bg-slate-50 transition";
+  const notifPopover = notifOpen ? (
+    <NotificationPopover
+      darkMode={darkMode}
+      notifications={notifications}
+      unreadCount={unreadCount}
+      notifError={notifError}
+      markAllNotificationsRead={markAllNotificationsRead}
+      markNotificationRead={markNotificationRead}
+    />
+  ) : null;
 
   return (
     <div className={shellClass}>
@@ -414,8 +375,7 @@ const Topbar = ({ credits = 0 }) => {
           </button>
         </div>
 
-        {/* Search */}
-      <div className="flex-1" />
+        <div className="flex-1" />
 
         {/* Actions */}
         <div className="flex items-center gap-3">
@@ -452,119 +412,153 @@ const Topbar = ({ credits = 0 }) => {
                 </span>
               )}
             </button>
+          </div>
 
-            {notifOpen && (
-              <div className={notificationsPanelClass}>
-                <div className="flex items-center justify-between gap-3">
-                  <div
-                    className={
-                      darkMode
-                        ? "text-sm font-bold text-slate-100"
+          {/* Portal so it never gets clipped/stacked by navbar/container */}
+          {notifOpen
+            ? createPortal(
+                <NotificationPopover
+                  darkMode={darkMode}
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  notifError={notifError}
+                  markAllNotificationsRead={markAllNotificationsRead}
+                  markNotificationRead={markNotificationRead}
+                />,
+                document.body,
+              )
+            : null}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const NotificationPopover = ({
+  darkMode,
+  notifications,
+  unreadCount,
+  notifError,
+  markAllNotificationsRead,
+  markNotificationRead,
+}) => {
+  return (
+    <div
+      className={
+        darkMode
+          ? "absolute top-[64px] right-[24px] z-[99999] w-[360px] max-w-[90vw] rounded-2xl border border-white/10 bg-slate-950/95 p-3 shadow-2xl backdrop-blur max-h-[70vh] overflow-auto"
+          : "absolute top-[64px] right-[24px] z-[99999] w-[360px] max-w-[90vw] rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl max-h-[70vh] overflow-auto"
+      }
+      role="dialog"
+      aria-label="Notifications"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div
+          className={
+            darkMode
+              ? "text-sm font-bold text-slate-100"
+              : "text-sm font-bold text-slate-900"
+          }
+        >
+          Notifications
+        </div>
+        <button
+          type="button"
+          className={
+            darkMode
+              ? "text-xs font-semibold text-cyan-300 hover:text-cyan-200"
+              : "text-xs font-semibold text-cyan-600 hover:text-cyan-500"
+          }
+          onClick={markAllNotificationsRead}
+        >
+          Mark all read
+        </button>
+      </div>
+
+      {notifications.length === 0 ? (
+        <div
+          className={
+            darkMode
+              ? "mt-3 text-sm text-slate-400"
+              : "mt-3 text-sm text-slate-500"
+          }
+        >
+          No notifications yet.
+        </div>
+      ) : (
+        <div className="mt-2 max-h-[320px] overflow-auto pr-1">
+          {notifications.map((n) => (
+            <div
+              key={n.id}
+              className={
+                darkMode
+                  ? "flex items-start gap-3 rounded-xl p-3 hover:bg-white/5 transition cursor-pointer"
+                  : "flex items-start gap-3 rounded-xl p-3 hover:bg-slate-50 transition cursor-pointer"
+              }
+              onClick={() => markNotificationRead(n.id)}
+              role="button"
+              tabIndex={0}
+            >
+              <div
+                className={
+                  n.read
+                    ? darkMode
+                      ? "h-2.5 w-2.5 rounded-full bg-slate-600 mt-2"
+                      : "h-2.5 w-2.5 rounded-full bg-slate-300 mt-2"
+                    : darkMode
+                      ? "h-2.5 w-2.5 rounded-full bg-cyan-400 mt-2"
+                      : "h-2.5 w-2.5 rounded-full bg-cyan-500 mt-2"
+                }
+              />
+              <div className="min-w-0">
+                <div
+                  className={
+                    darkMode
+                      ? n.read
+                        ? "text-sm font-semibold text-slate-200"
+                        : "text-sm font-bold text-white"
+                      : n.read
+                        ? "text-sm font-semibold text-slate-900"
                         : "text-sm font-bold text-slate-900"
-                    }
-                  >
-                    Notifications
-                  </div>
-                  <button
-                    type="button"
-                    className={
-                      darkMode
-                        ? "text-xs font-semibold text-cyan-300 hover:text-cyan-200"
-                        : "text-xs font-semibold text-cyan-600 hover:text-cyan-500"
-                    }
-                    onClick={markAllNotificationsRead}
-                  >
-                    Mark all read
-                  </button>
+                  }
+                >
+                  {n.title}
                 </div>
-
-                {notifications.length === 0 ? (
+                <div
+                  className={
+                    darkMode
+                      ? "text-xs text-slate-400 mt-1"
+                      : "text-xs text-slate-500 mt-1"
+                  }
+                >
+                  {new Date(n.createdAt).toLocaleString()}
+                </div>
+                {n.body && (
                   <div
                     className={
                       darkMode
-                        ? "mt-3 text-sm text-slate-400"
-                        : "mt-3 text-sm text-slate-500"
+                        ? "text-xs text-slate-300 mt-1"
+                        : "text-xs text-slate-700 mt-1"
                     }
                   >
-                    No notifications yet.
-                  </div>
-                ) : (
-                  <div className="mt-2 max-h-[320px] overflow-auto pr-1">
-                    {notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        className={notifItemClass}
-                        onClick={() => markNotificationRead(n.id)}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <div
-                          className={
-                            n.read
-                              ? darkMode
-                                ? "h-2.5 w-2.5 rounded-full bg-slate-600 mt-2"
-                                : "h-2.5 w-2.5 rounded-full bg-slate-300 mt-2"
-                              : darkMode
-                                ? "h-2.5 w-2.5 rounded-full bg-cyan-400 mt-2"
-                                : "h-2.5 w-2.5 rounded-full bg-cyan-500 mt-2"
-                          }
-                        />
-                        <div className="min-w-0">
-                          <div
-                            className={
-                              darkMode
-                                ? n.read
-                                  ? "text-sm font-semibold text-slate-200"
-                                  : "text-sm font-bold text-white"
-                                : n.read
-                                  ? "text-sm font-semibold text-slate-900"
-                                  : "text-sm font-bold text-slate-900"
-                            }
-                          >
-                            {n.title}
-                          </div>
-                          <div
-                            className={
-                              darkMode
-                                ? "text-xs text-slate-400 mt-1"
-                                : "text-xs text-slate-500 mt-1"
-                            }
-                          >
-                            {new Date(n.createdAt).toLocaleString()}
-                          </div>
-                          {n.body && (
-                            <div
-                              className={
-                                darkMode
-                                  ? "text-xs text-slate-300 mt-1"
-                                  : "text-xs text-slate-700 mt-1"
-                              }
-                            >
-                              {n.body}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {notifError && (
-                  <div
-                    className={
-                      darkMode
-                        ? "mt-2 text-sm text-red-300"
-                        : "mt-2 text-sm text-red-600"
-                    }
-                  >
-                    {notifError}
+                    {n.body}
                   </div>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
+
+      {notifError && (
+        <div
+          className={
+            darkMode ? "mt-2 text-sm text-red-300" : "mt-2 text-sm text-red-600"
+          }
+        >
+          {notifError}
+        </div>
+      )}
     </div>
   );
 };
