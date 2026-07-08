@@ -3,13 +3,6 @@ import ErrorHandler from "../middlewares/error.js";
 import { buildPaginationMeta, getPagination, getSort } from "./queryService.js";
 import { analyzeResumeWithAI } from "./resumeAnalysisAI.js";
 
-export const uploadResumeAnalysisService = async (userId, payload) => {
-  return await ResumeAnalysis.create({
-    ...payload,
-    user: userId,
-  });
-};
-
 export const analyzeResumeWithAIAndSave = async (
   userId,
   { resumeUrl, resumeText },

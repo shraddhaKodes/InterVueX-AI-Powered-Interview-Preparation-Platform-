@@ -25,13 +25,7 @@ const paymentSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: [
-        "pending",
-        "completed",
-        "failed",
-        "refunded",
-        "cancelled",
-      ],
+      enum: ["pending", "completed", "failed", "refunded", "cancelled"],
       default: "pending",
     },
 
@@ -53,6 +47,15 @@ const paymentSchema = new mongoose.Schema(
 
     razorpaySignature: String,
 
+    creditsCredited: {
+      type: Boolean,
+      default: false,
+    },
+
+    creditedAt: {
+      type: Date,
+    },
+
     transactionDate: {
       type: Date,
       default: Date.now,
@@ -60,10 +63,7 @@ const paymentSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export const Payment = mongoose.model(
-  "Payment",
-  paymentSchema
-);
+export const Payment = mongoose.model("Payment", paymentSchema);

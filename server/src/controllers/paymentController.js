@@ -5,6 +5,71 @@ import dotenv from "dotenv";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
+const emitCreditsUpdate = (userId, credits) => {
+  const io = globalThis.__io;
+  if (!io || !userId) return;
+
+  io.to(String(userId)).emit("credits:updated", {
+    credits,
+  });
+};
+
+const finalizePayment = async ({
+  payment,
+  razorpayPaymentId,
+  razorpaySignature,
+}) => {
+  if (payment.status === "completed" && payment.creditsCredited) {
+    return {
+      success: true,
+      alreadyProcessed: true,
+      payment,
+    };
+  }
+
+  if (
+    payment.status === "failed" ||
+    payment.status === "cancelled" ||
+    payment.status === "refunded"
+  ) {
+    throw new Error(
+      "Payment cannot be credited because it is no longer pending.",
+    );
+  }
+
+  payment.paymentId = razorpayPaymentId;
+  payment.razorpayPaymentId = razorpayPaymentId;
+  payment.razorpaySignature = razorpaySignature;
+  payment.status = "completed";
+  payment.transactionDate = new Date();
+  await payment.save();
+
+  const updatedUser = await User.findByIdAndUpdate(
+    payment.user,
+    { $inc: { credits: payment.creditsPurchased } },
+    { new: true },
+  );
+
+  if (!updatedUser) {
+    throw new Error(
+      "Unable to credit user balance after payment confirmation.",
+    );
+  }
+
+  payment.creditsCredited = true;
+  payment.creditedAt = new Date();
+  await payment.save();
+
+  emitCreditsUpdate(updatedUser._id, updatedUser.credits);
+
+  return {
+    success: true,
+    alreadyProcessed: false,
+    payment,
+    updatedUser,
+  };
+};
+
 dotenv.config();
 
 const razorpay = new Razorpay({
@@ -24,12 +89,6 @@ export const createOrder = async (req, res) => {
         message: "Invalid credit pack selection.",
       });
     }
-
-    // Wipe past frozen or uncompleted pending items so this user has a clean slate
-    await Payment.deleteMany({
-      user: req.user.id,
-      status: "pending",
-    });
 
     // BACKEND CONVERSION ONLY: Razorpay requires paise subunits
     const order = await razorpay.orders.create({
@@ -87,13 +146,6 @@ export const verifyPayment = async (req, res) => {
       });
     }
 
-    if (payment.status === "completed") {
-      return res.status(200).json({
-        success: true,
-        message: "Payment signature already verified previously.",
-      });
-    }
-
     const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -108,33 +160,97 @@ export const verifyPayment = async (req, res) => {
       });
     }
 
-    payment.paymentId = razorpay_payment_id;
-    payment.razorpayPaymentId = razorpay_payment_id;
-    payment.razorpaySignature = razorpay_signature;
-    payment.status = "completed";
-    payment.transactionDate = new Date();
-    await payment.save();
-
-    const updatedUser = await User.findByIdAndUpdate(
-      payment.user,
-      { $inc: { credits: payment.creditsPurchased } },
-      { new: true },
-    );
-
-    // Socket.IO: emit credits update to this user
-    const io = expressApp?.get?.("io") || globalThis.__io;
-    if (io && updatedUser?._id) {
-      io.to(String(updatedUser._id)).emit("credits:updated", {
-        credits: updatedUser.credits,
-      });
-    }
+    const result = await finalizePayment({
+      payment,
+      razorpayPaymentId: razorpay_payment_id,
+      razorpaySignature: razorpay_signature,
+    });
 
     res.status(200).json({
       success: true,
-      message: "Transaction verified successfully. Credits deposited.",
+      message: result.alreadyProcessed
+        ? "Payment was already verified. Credits remain available."
+        : "Transaction verified successfully. Credits deposited.",
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const handleRazorpayWebhook = async (req, res) => {
+  try {
+    const signature = req.get("x-razorpay-signature");
+    if (!signature || !req.rawBody) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing Razorpay webhook signature.",
+      });
+    }
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
+      .update(req.rawBody)
+      .digest("hex");
+
+    if (expectedSignature !== signature) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Razorpay webhook signature.",
+      });
+    }
+
+    const event = req.body;
+    const paymentEntity = event?.payload?.payment?.entity;
+    const eventName = event?.event;
+
+    if (!paymentEntity?.order_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Webhook payload missing order details.",
+      });
+    }
+
+    const payment = await Payment.findOne({
+      razorpayOrderId: paymentEntity.order_id,
+    });
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction mapping context mismatch for webhook event.",
+      });
+    }
+
+    const shouldCredit =
+      eventName === "payment.captured" ||
+      eventName === "payment.authorized" ||
+      eventName === "order.paid" ||
+      ["captured", "authorized", "paid"].includes(paymentEntity.status);
+
+    if (!shouldCredit) {
+      if (eventName === "payment.failed") {
+        payment.status = "failed";
+        await payment.save();
+      }
+      return res.status(200).json({
+        success: true,
+        message: "Webhook processed without crediting the wallet.",
+      });
+    }
+
+    await finalizePayment({
+      payment,
+      razorpayPaymentId: paymentEntity.id,
+      razorpaySignature: signature,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Payment credits synced via webhook.",
+    });
+  } catch (error) {
+    console.error("Razorpay webhook failure:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

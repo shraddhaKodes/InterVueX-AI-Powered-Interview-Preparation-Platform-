@@ -2,12 +2,6 @@ import ErrorHandler from "../middlewares/error.js";
 import { v2 as cloudinary } from "cloudinary";
 import { PDFParse } from "pdf-parse";
 
-// pdf-parse@2.4.5 is CJS; ESM-friendly import is { PDFParse }.
-const pdfParse = (buffer) => new PDFParse()._parseBuffer(buffer);
-
-import { analyzeResumeWithAI } from "./resumeAnalysisAI.js";
-import { ResumeAnalysis } from "../models/ResumeAnalysisSchema.js";
-
 export const uploadPdfToCloudinaryAndExtractText = async (file) => {
   console.log("Starting PDF upload and text extraction...");
 
@@ -62,21 +56,4 @@ export const uploadPdfToCloudinaryAndExtractText = async (file) => {
   } finally {
     await parser.destroy();
   }
-};
-
-export const analyzeAndSaveResumeFromUpload = async (userId, uploadedFile) => {
-  const { resumeUrl, resumeText } =
-    await uploadPdfToCloudinaryAndExtractText(uploadedFile);
-
-  const resumeAnalysis = await analyzeResumeWithAI(resumeText);
-
-  return await ResumeAnalysis.create({
-    user: userId,
-    resumeUrl,
-    extractedSkills: resumeAnalysis.extractedSkills,
-    missingSkills: resumeAnalysis.missingSkills,
-    ATSScore: resumeAnalysis.ATSScore,
-    feedback: resumeAnalysis.feedback,
-    suggestedImprovements: resumeAnalysis.suggestedImprovements,
-  });
 };

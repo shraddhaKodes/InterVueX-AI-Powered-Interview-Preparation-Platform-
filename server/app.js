@@ -40,9 +40,7 @@ dotenv.config({
 
 validateOnlineCompilerConfig();
 
-const allowedOrigins = [
-  process.env.CLIENT_URL
-].filter(Boolean);
+const allowedOrigins = [process.env.CLIENT_URL].filter(Boolean);
 
 const isLocalOrigin = (origin) =>
   /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
@@ -66,15 +64,28 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  express.json({
+    verify: (req, _res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
+app.use(
+  express.urlencoded({
+    extended: true,
+    verify: (req, _res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
 
 const legacyFileUpload = fileUpload({
   useTempFiles: true,
   tempFileDir: "./tmp/",
 });
 
-// express-fileupload and multer both parse multipart streams. 
+// express-fileupload and multer both parse multipart streams.
 //Resume analysis uses multer, so keep the legacy parser away from that route.
 app.use((req, res, next) => {
   if (req.path.startsWith("/api/v1/resume-analysis")) {
@@ -83,8 +94,6 @@ app.use((req, res, next) => {
 
   return legacyFileUpload(req, res, next);
 });
-
-
 
 // TEST ROUTE
 app.get("/", (req, res) => {

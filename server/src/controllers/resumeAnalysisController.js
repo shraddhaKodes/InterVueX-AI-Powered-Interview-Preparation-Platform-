@@ -3,25 +3,14 @@ import {
   deleteResumeAnalysisService,
   getResumeAnalysesService,
   getResumeAnalysisByIdService,
-  uploadResumeAnalysisService,
   analyzeResumeWithAIAndSave,
 } from "../services/resumeAnalysisService.js";
 import { uploadPdfToCloudinaryAndExtractText } from "../services/resumeAnalysisUploadService.js";
-import { consumeCreditsService } from "../services/creditUsageService.js";
+import {
+  consumeCreditsService,
+  ensureSufficientCreditsService,
+} from "../services/creditUsageService.js";
 import { FEATURE_CREDITS } from "../config/featureCredits.js";
-
-export const uploadResumeAnalysis = catchAsyncErrors(async (req, res) => {
-  const resumeAnalysis = await uploadResumeAnalysisService(
-    req.user.id,
-    req.body,
-  );
-
-  res.status(201).json({
-    success: true,
-    message: "Resume analysis created successfully",
-    resumeAnalysis,
-  });
-});
 
 export const analyzeResume = catchAsyncErrors(async (req, res) => {
   if (!req.file) {
@@ -32,10 +21,7 @@ export const analyzeResume = catchAsyncErrors(async (req, res) => {
   }
 
   const creditsToConsume = FEATURE_CREDITS["Resume Upload + Analysis"];
-  await consumeCreditsService(req.user.id, {
-    featureUsed: "resume-analysis",
-    creditsConsumed: creditsToConsume,
-  });
+  await ensureSufficientCreditsService(req.user.id, creditsToConsume);
 
   console.log("Received file:", req.file.originalname, "size:", req.file.size);
   const { resumeUrl, resumeText } = await uploadPdfToCloudinaryAndExtractText(
@@ -46,6 +32,23 @@ export const analyzeResume = catchAsyncErrors(async (req, res) => {
     resumeUrl,
     resumeText,
   });
+
+  try {
+    await consumeCreditsService(req.user.id, {
+      featureUsed: "resume-analysis",
+      creditsConsumed: creditsToConsume,
+    });
+  } catch (error) {
+    if (resumeAnalysis?._id) {
+      try {
+        await deleteResumeAnalysisService(req.user.id, resumeAnalysis._id);
+      } catch (cleanupError) {
+        console.error("Failed to remove unpaid resume analysis:", cleanupError);
+      }
+    }
+
+    throw error;
+  }
 
   // Socket.IO notification
   const io = globalThis.__io;

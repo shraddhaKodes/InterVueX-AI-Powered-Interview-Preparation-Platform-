@@ -7,7 +7,10 @@ import {
   getUserSubmissionsService,
   getSubmissionByIdService,
 } from "../services/codingArenaService.js";
-import { consumeCreditsService } from "../services/creditUsageService.js";
+import {
+  consumeCreditsService,
+  ensureSufficientCreditsService,
+} from "../services/creditUsageService.js";
 import { FEATURE_CREDITS } from "../config/featureCredits.js";
 
 export const listProblems = catchAsyncErrors(async (req, res) => {
@@ -47,10 +50,7 @@ export const runCode = catchAsyncErrors(async (req, res) => {
 export const submitSolution = catchAsyncErrors(async (req, res) => {
   const creditsToConsume = FEATURE_CREDITS["Submit Solution"];
 
-  await consumeCreditsService(req.user.id, {
-    featureUsed: "coding-arena",
-    creditsConsumed: creditsToConsume,
-  });
+  await ensureSufficientCreditsService(req.user.id, creditsToConsume);
 
   const { problemId, sourceCode, language, parallel } = req.body;
   const userId = req.user?.id;
@@ -61,6 +61,11 @@ export const submitSolution = catchAsyncErrors(async (req, res) => {
     sourceCode,
     language,
     parallel,
+  });
+
+  await consumeCreditsService(req.user.id, {
+    featureUsed: "coding-arena",
+    creditsConsumed: creditsToConsume,
   });
 
   res.status(200).json({

@@ -18,6 +18,8 @@ const Payment = () => {
   const { user } = useAuth();
   const theme = useContext(ThemeContext);
 
+  const pendingVerificationKey = "pendingPaymentVerification";
+
   const [buyingIndex, setBuyingIndex] = useState(null);
   const [data, setdata] = useState([]);
   const [localLoading, setLocalLoading] = useState(false);
@@ -52,9 +54,35 @@ const Payment = () => {
     }
   };
 
+  const recoverPendingVerification = async () => {
+    if (typeof window === "undefined") return;
+
+    const rawPendingVerification = localStorage.getItem(pendingVerificationKey);
+    if (!rawPendingVerification) return;
+
+    try {
+      const pendingVerification = JSON.parse(rawPendingVerification);
+      await verifyPayment({
+        razorpay_payment_id: pendingVerification.razorpay_payment_id,
+        razorpay_order_id: pendingVerification.razorpay_order_id,
+        razorpay_signature: pendingVerification.razorpay_signature,
+      });
+
+      localStorage.removeItem(pendingVerificationKey);
+      toast.success(
+        "A previous payment was verified successfully. Credits added.",
+      );
+      await loadPayments();
+      await fetchData();
+    } catch (error) {
+      console.error("Pending payment verification retry failed:", error);
+    }
+  };
+
   useEffect(() => {
     loadPayments();
     fetchData();
+    recoverPendingVerification();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -87,13 +115,25 @@ const Payment = () => {
               razorpay_signature: response.razorpay_signature,
             });
 
+            localStorage.removeItem(pendingVerificationKey);
             toast.success("Payment successful! Credits added.");
 
             await loadPayments();
             await fetchData();
           } catch (error) {
-            toast.error(
-              error?.response?.data?.message || "Payment verification failed.",
+            const pendingPayload = {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            };
+
+            localStorage.setItem(
+              pendingVerificationKey,
+              JSON.stringify(pendingPayload),
+            );
+
+            toast.info(
+              "Payment completed, but credit sync is pending. We will retry automatically.",
             );
           } finally {
             setBuyingIndex(null);
