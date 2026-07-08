@@ -78,16 +78,19 @@ const Topbar = ({ credits = 0 }) => {
   const notifWrapRef = useRef(null);
   const debouncedRef = useRef(null);
 
-  const markAllNotificationsRead = useCallback(async () => {
+  const markAllNotificationsRead = useCallback(async (event) => {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
     try {
+      setNotifError("");
       await markAllNotificationsReadRequest();
       setNotifications((prev) =>
         prev.map((n) => (n.read ? n : { ...n, read: true })),
       );
-    } catch {
-      setNotifications((prev) =>
-        prev.map((n) => (n.read ? n : { ...n, read: true })),
-      );
+    } catch (error) {
+      console.error("Failed to mark all notifications as read", error);
+      setNotifError("Could not mark all notifications as read.");
     }
   }, []);
 
@@ -451,6 +454,8 @@ const NotificationPopover = ({
       }
       role="dialog"
       aria-label="Notifications"
+      onMouseDown={(event) => event.stopPropagation()}
+      onClick={(event) => event.stopPropagation()}
     >
       <div className="flex items-center justify-between gap-3">
         <div
